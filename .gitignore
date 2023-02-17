@@ -1,2 +1,5 @@
+#ignore directories
 node_modules
 build
+
+#ignore files

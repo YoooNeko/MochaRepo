@@ -10,13 +10,5 @@ import './index.css';
 // 引入根组件
 import App from './App';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
 // 渲染根组件APP 到一个id为root的dom节点上
-root.render(
-  // 严格模式节点需要去掉
-  // useEffect的执行时期
-  //<React.StrictMode>
-  <App />
-  //</React.StrictMode>
-);
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);

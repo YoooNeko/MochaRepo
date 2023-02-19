@@ -10,11 +10,20 @@ MoveFileName = ""   #文件名
 src = ""     # 被移动的目录
 dst = ""     # 被移动的目录的目的地
 
-
 # 移动目标目录
-def DirMove(src, dst) :
-    shutil.move(src, dst)
-    print("move success")
+def DirMove(src_folder, dst_folder):
+    global MoveFileName
+    try:
+        # 创建目标文件夹（如果不存在）
+        if not os.path.exists(dst_folder + MoveFileName):
+            os.makedirs(dst_folder + MoveFileName)
+
+        # 递归移动文件夹，并保留用户权限
+        shutil.copytree(src_folder, dst_folder + MoveFileName, copy_function=shutil.copy2)
+        print("文件夹已成功移动！")
+
+    except Exception as e:
+        print(f"移动文件夹时出错：{e}")
 
 # 获取被移动的文件名
 def GetLinkDes(src, type):
@@ -27,6 +36,7 @@ def GetLinkDes(src, type):
             if strTemp[index] == '/':
                 if type == True:
                     MoveFileName = strTemp[index + 1:len(strTemp)]
+                    print(MoveFileName)
                 return strTemp[0:index]
 
 def select_folder_src():
@@ -57,12 +67,12 @@ def OnMove():
         return
 
     # 获取一下被移动的目录名
-    GetLinkDes(src, dst)
+    GetLinkDes(src, True)
     # 移动目录
     DirMove(src, dst)
 
     # 建立软链接
-    mklinkSrc = src;                      # 创建的地点
+    mklinkSrc = src                       # 创建的地点
     mklinkDes = dst + '/' + MoveFileName  # 被创建软链接的目录
     os.chmod(mklinkDes, stat.S_IWRITE)      # 加权限不然没法做软链接
     os.symlink(mklinkDes, mklinkSrc)        # 建立软链接

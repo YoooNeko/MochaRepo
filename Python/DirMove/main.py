@@ -5,6 +5,7 @@ import tkinter
 import tkinter.messagebox
 from tkinter import *
 from tkinter import filedialog
+import subprocess
 
 MoveFileName = ""   #文件名
 src = ""     # 被移动的目录
@@ -19,11 +20,16 @@ def DirMove(src_folder, dst_folder):
             os.makedirs(dst_folder + MoveFileName)
 
         # 递归移动文件夹，并保留用户权限
-        shutil.copytree(src_folder, dst_folder + MoveFileName, copy_function=shutil.copy2)
-        print("文件夹已成功移动！")
+        # xcopy 命令
+        xcopy_cmd = 'xcopy "{0}" "{1}" /E /H /K /X /Y /B /C'.format(src_folder, dst_folder + MoveFileName)
+
+        # 使用 subprocess 调用 xcopy 命令
+        subprocess.call(xcopy_cmd, shell=True)
+        tkinter.messagebox.showinfo(title="success", message="移动成功")
+        shutil.rmtree(src_folder)
 
     except Exception as e:
-        print(f"移动文件夹时出错：{e}")
+        tkinter.messagebox.showerror(title="success", message=f"移动文件夹时出错：{e}")
 
 # 获取被移动的文件名
 def GetLinkDes(src, type):

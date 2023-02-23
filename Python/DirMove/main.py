@@ -6,10 +6,16 @@ import tkinter.messagebox
 from tkinter import *
 from tkinter import filedialog
 import subprocess
+import windnd
 
 MoveFileName = ""   #文件名
 src = ""     # 被移动的目录
 dst = ""     # 被移动的目录的目的地
+
+def dragged_files(files):
+    #print('绝对路径', os.path.abspath(files))
+    msg = '\n'.join((item.decode('gbk') for item in files))
+    print('您拖放的文件',msg)
 
 # 移动目标目录
 def DirMove(src_folder, dst_folder):
@@ -19,10 +25,12 @@ def DirMove(src_folder, dst_folder):
         if not os.path.exists(dst_folder + MoveFileName):
             os.makedirs(dst_folder + MoveFileName)
 
+        tempSrc = src_folder.replace('/', '\\')
+        tempDst = (dst_folder + MoveFileName).replace('/', '\\')
         # 递归移动文件夹，并保留用户权限
         # xcopy 命令
-        xcopy_cmd = 'xcopy "{0}" "{1}" /E /H /K /X /Y /B /C'.format(src_folder, dst_folder + MoveFileName)
-
+        xcopy_cmd = 'xcopy \"{0}\" \"{1}\" /E /H /K /X /Y /B /C'.format(tempSrc, tempDst)
+        print(xcopy_cmd)
         # 使用 subprocess 调用 xcopy 命令
         subprocess.call(xcopy_cmd, shell=True)
         tkinter.messagebox.showinfo(title="success", message="移动成功")
@@ -99,5 +107,7 @@ if __name__ == '__main__':
     tkinter.Button(root, text = "选择目标目录", command = select_folder_src).grid(column = 10, row = 0)
     tkinter.Button(root, text = "选择目的目录", command = select_folder_des).grid(column = 10, row = 5)
     tkinter.Button(root, text = "确定", command = OnMove).grid(column = 1, row = 8)
+
+    windnd.hook_dropfiles(root, func=dragged_files)
 
     root.mainloop()
